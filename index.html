@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom CSS for background image */
+        .bg-custom {
+            background-image: url('https://localhost/warehouse/img/background.jpeg'); /* Replace with your image path */
+            background-size: cover;
+            background-position: center;
+            filter: blur(5px);
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex items-center justify-center">
+    <!-- Background Image -->
+    <div class="absolute inset-0 bg-custom"></div>
+
+    <!-- Main Container -->
+    <div class="relative bg-black shadow-lg rounded-lg p-8 max-w-3xl w-full">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-50">Warehouse Management System</h1>
+            <p class="text-gray-400 mt-2">Efficiently manage your inventory and users</p>
+        </header>
+
+        <!-- Hero Section -->
+        <main class="text-center">
+            <h2 class="text-2xl font-semibold text-gray-100 mb-4">Welcome!</h2>
+            <p class="text-gray-400 mb-6">Choose your role to get started:</p>
+            <div class="flex justify-center space-x-6">
+                <!-- User Dashboard Button -->
+                <a href="user_dashboard.php" class="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-800 transition duration-300">
+                    User Dashboard
+                </a>
+                <!-- Admin Dashboard Button -->
+                <a href="admin_dashboard.php" class="bg-amber-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-amber-800 transition duration-300">
+                    Admin Dashboard
+                </a>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-8 text-center text-gray-500 text-sm">
+            &copy; 2025 Warehouse Management System. All rights reserved.
+        </footer>
+    </div>
+</body>
+</html>
