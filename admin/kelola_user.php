@@ -1,7 +1,7 @@
 <?php
 include('../koneksi.php'); // Pastikan file koneksi sudah ada dan benar
 
-$usersQuery = "SELECT id, username, role FROM user";
+$usersQuery = "SELECT id, username, role FROM users";
 $usersResult = $conn->query($usersQuery);
 $users = [];
 if ($usersResult && $usersResult->num_rows > 0) {
@@ -18,6 +18,12 @@ if (isset($_POST['insert'])) {
 
     $stmt = $conn->prepare("INSERT INTO user (username, password, role) VALUES (?, ?, ?)");
     $stmt->bind_param("sss", $username, $password, $role);
+    
+    // Update user password in DB
+    $new_hash = password_hash($password, PASSWORD_DEFAULT);
+    $update = $conn->prepare("UPDATE users SET password = ? WHERE username = ?");
+    $update->bind_param("ss", $new_hash, $user['username']);
+    $update->execute();
 
     if ($stmt->execute()) {
         // Catat aktivitas ke tabel audit_trail

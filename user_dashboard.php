@@ -7,7 +7,7 @@ $resultTotalItems = $conn->query($queryTotalItems);
 $totalItems = $resultTotalItems->fetch_assoc()['total_items'] ?? 0;
 
 // Low Stock Items
-$queryLowStockItems = "SELECT nama_barang AS name, jumlah AS stock, lokasi AS location FROM stok_barang WHERE jumlah < 10";
+$queryLowStockItems = "SELECT nama_barang AS name, jumlah AS stock, id_rak AS location FROM stok_barang WHERE jumlah < 10";
 $resultLowStockItems = $conn->query($queryLowStockItems);
 $lowStockItems = [];
 if ($resultLowStockItems && $resultLowStockItems->num_rows > 0) {

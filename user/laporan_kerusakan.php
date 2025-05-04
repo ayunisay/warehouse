@@ -121,9 +121,22 @@ if (isset($_GET['delete'])) {
             <h2 class="text-2xl font-bold text-gray-700 mb-4">Laporan Kerusakan</h2>
             <form method="POST">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="nama_barang" class="block text-gray-600 font-medium mb-2">Nama Barang</label>
-                        <input type="text" id="nama_barang" name="nama_barang" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Masukkan nama barang" required>
+                <div>
+                        <label for="id_barang" class="block text-gray-600 font-medium mb-2">Nama Barang</label>
+                        <select id="id_barang" name="id_barang" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                            <option value="" disabled selected>Pilih Barang</option>
+                            <?php
+                            $barangResult = $conn->query("SELECT * FROM stok_barang");
+                            if ($barangResult && $barangResult->num_rows > 0) {
+                                while ($id_barang = $barangResult->fetch_assoc()) {
+                                    $selected = ($edit_data && $edit_data['id_rak'] === $id_barang['id_barang']) ? 'selected' : '';
+                                    echo "<option value='" . htmlspecialchars($id_barang['id_barang']) . "' $selected>" . htmlspecialchars($id_barang['nama_barang']) . "</option>";
+                                }
+                            } else {
+                                echo "<option value='' disabled>Tidak ada kategori tersedia</option>";
+                            }
+                            ?>
+                        </select>
                     </div>
                     <div>
                         <label for="jumlah" class="block text-gray-600 font-medium mb-2">Jumlah</label>
@@ -156,7 +169,8 @@ if (isset($_GET['delete'])) {
                     <tbody class="divide-y divide-gray-200">
                         <?php
                         // Ambil data dari tabel request
-                        $sql = "SELECT id_barang_rsk, nama_barang, jumlah, deskripsi, status, tanggal FROM barang_rusak";                        $result = $conn->query($sql);
+                        $sql = "SELECT id_barang_rsk, nama_barang, jumlah, deskripsi, status, tanggal FROM barang_rusak"; 
+                        $result = $conn->query($sql);
                         $no = 1;
 
                         if ($result && $result->num_rows > 0) {
