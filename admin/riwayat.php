@@ -1,4 +1,5 @@
 <?php
+session_start();
 include('../koneksi.php');
 
 ?>
@@ -15,14 +16,14 @@ include('../koneksi.php');
     <nav class="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
              <!-- Logo -->
-             <a href="../user_dashboard.php" class="text-2xl font-extrabold tracking-wide hover:text-yellow-400 transition duration-300">
+             <a href="../admin_dashboard.php" class="text-2xl font-extrabold tracking-wide hover:text-yellow-400 transition duration-300">
                 <span class="text-yellow-400">Warehouse</span> Management
             </a>
             <!-- Navigation Links -->
             <div class="flex items-center space-x-11">
                 <ul class="flex space-x-6 text-sm font-medium">
                     <li>
-                        <a href="../user_dashboard.php" class="hover:text-yellow-400 transition duration-300">Dashboard</a>
+                        <a href="../admin_dashboard.php" class="hover:text-yellow-400 transition duration-300">Dashboard</a>
                     </li>
                     <li>
                         <a href="kelola_stok.php" class="hover:text-yellow-400 transition duration-300">Stok</a>
@@ -57,46 +58,51 @@ include('../koneksi.php');
 
         <!-- Transaction History Table -->
         <div class="bg-white shadow-md rounded-lg p-6">
-            <h2 class="text-2xl font-bold text-gray-700 mb-4">Daftar Riwayat Transaksi</h2>
-            <table class="min-w-full bg-white border border-gray-300">
-                <thead>
-                    <tr>
-                        <th class="py-2 px-4 border-b">Tanggal</th>
-                        <th class="py-2 px-4 border-b">Nama Barang</th>
-                        <th class="py-2 px-4 border-b">Jumlah</th>
-                        <th class="py-2 px-4 border-b">Jenis Transaksi</th>
-                        <th class="py-2 px-4 border-b">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    // Contoh data riwayat transaksi
-                    $transactionHistory = [
-                        ['date' => '2025-04-01', 'item' => 'Item A', 'quantity' => 10, 'type' => 'Peminjaman', 'status' => 'Completed'],
-                        ['date' => '2025-04-02', 'item' => 'Item B', 'quantity' => 5, 'type' => 'Penggunaan', 'status' => 'Pending'],
-                        ['date' => '2025-04-03', 'item' => 'Item C', 'quantity' => 7, 'type' => 'Pengembalian', 'status' => 'Rejected'],
-                    ];
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Daftar Barang Keluar</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="py-3 px-4 border-b text-left text-gray-600 font-medium">No</th>
+                            <th class="py-3 px-4 border-b text-left text-gray-600 font-medium">Nama Barang</th>
+                            <th class="py-3 px-4 border-b text-left text-gray-600 font-medium">Tanggal</th>
+                            <th class="py-3 px-4 border-b text-left text-gray-600 font-medium">Jumlah</th>
+                            <th class="py-3 px-4 border-b text-left text-gray-600 font-medium">Keterangan</th>
+                            <th class="py-3 px-4 border-b text-left text-gray-600 font-medium">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <?php
+                            $sql = "SELECT keluar.id_keluar, stok_barang.id_barang, stok_barang.nama_barang, keluar.tanggal, keluar.jumlah, keluar.keterangan FROM keluar JOIN stok_barang ON keluar.id_barang = stok_barang.id_barang;";
+                            $result = $conn->query($sql);
 
-                    if (!empty($transactionHistory)) {
-                        foreach ($transactionHistory as $transaction) {
-                            echo "<tr>
-                                    <td class='py-2 px-4 border-b'>{$transaction['date']}</td>
-                                    <td class='py-2 px-4 border-b'>{$transaction['item']}</td>
-                                    <td class='py-2 px-4 border-b'>{$transaction['quantity']}</td>
-                                    <td class='py-2 px-4 border-b'>{$transaction['type']}</td>
-                                    <td class='py-2 px-4 border-b'>{$transaction['status']}</td>
-                                  </tr>";
-                        }
-                    } else {
-                        echo "<tr>
-                                <td colspan='5' class='py-2 px-4 border-b text-center text-gray-500'>Belum ada riwayat transaksi.</td>
-                              </tr>";
-                    }
-                    ?>
-                </tbody>
-            </table>
+                            $no = 1; // Inisialisasi nomor urut
+
+                            if ($result && $result->num_rows > 0) {
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<tr class='hover:bg-gray-50'>
+                                            <td class='py-3 px-4'>" . htmlspecialchars($no++) . "</td>
+                                            <td class='py-3 px-4'>" . htmlspecialchars($row['nama_barang']) ."</td>
+                                            <td class='py-3 px-4'>" . htmlspecialchars($row['tanggal']) . "</td>
+                                            <td class='py-3 px-4'>" . htmlspecialchars($row['jumlah']) . "</td>
+                                            <td class='py-3 px-4'>" . htmlspecialchars($row['keterangan']) . "</td>
+                                            <td class='py-3 px-4'>
+                                                <a href='?delete=" . $row['id_keluar'] . "' onclick=\"return confirm('Yakin ingin menghapus?')\" class='text-red-500 hover:underline'>Hapus</a>
+                                            </td>
+                                        </tr>";
+                                }
+                            } else {
+                                echo "<tr>
+                                        <td colspan='6' class='py-3 px-4 text-center text-gray-500'>Belum ada data barang.</td>
+                                    </tr>";
+                            }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-white w-full mt-8 pb-5">

@@ -110,25 +110,25 @@ $result_kategori = $conn->query($sql_kategori);
             <!-- Navigation Links -->
             <div class="flex items-center space-x-11">
                 <ul class="flex space-x-6 text-sm font-medium">
-                    <li>
-                        <a href="../admin_dashboard.php" class="hover:text-yellow-400 transition duration-300">Dashboard</a>
-                    </li>
-                    <li>
-                        <a href="kelola_stok.php" class="hover:text-yellow-400 transition duration-300">Stok</a>
-                    </li>
-                    <li>
-                        <a href="kelola_supplier.php" class="hover:text-yellow-400 transition duration-300">Supplier</a>
-                    </li>
-                    <li>
-                        <a href="kelola_user.php" class="hover:text-yellow-400 transition duration-300">User</a>
-                    </li>
-                    <li>
-                        <a href="riwayat.php" class="hover:text-yellow-400 transition duration-300">Riwayat Keluar</a>
-                    </li>
-                    <li>
-                        <a href="kelola_permintaan.php" class="hover:text-yellow-400 transition duration-300">Permintaan Barang</a>
-                    </li>
-                </ul>
+                        <li>
+                            <a href="../admin_dashboard.php" class="hover:text-yellow-400 transition duration-300">Dashboard</a>
+                        </li>
+                        <li>
+                            <a href="kelola_stok.php" class="hover:text-yellow-400 transition duration-300">Stok</a>
+                        </li>
+                        <li>
+                            <a href="kelola_supplier.php" class="hover:text-yellow-400 transition duration-300">Supplier</a>
+                        </li>
+                        <li>
+                            <a href="kelola_user.php" class="hover:text-yellow-400 transition duration-300">User</a>
+                        </li>
+                        <li>
+                            <a href="riwayat.php" class="hover:text-yellow-400 transition duration-300">Riwayat Keluar</a>
+                        </li>
+                        <li>
+                            <a href="kelola_permintaan.php" class="hover:text-yellow-400 transition duration-300">Permintaan Barang</a>
+                        </li>
+                    </ul>
 
                 <!-- Logout Button -->
                 <a href="../logout.php" class="flex items-center bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition duration-300">

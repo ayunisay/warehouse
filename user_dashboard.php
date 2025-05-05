@@ -1,5 +1,6 @@
 <?php
-include('koneksi.php');
+session_start();
+include('koneksi.php'); 
 
 // Total Items
 $queryTotalItems = "SELECT COUNT(*) AS total_items FROM stok_barang";

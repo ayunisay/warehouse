@@ -136,7 +136,7 @@ if (isset($_GET['edit'])) {
             <!-- Navigation Links -->
             <div class="flex items-center space-x-11">
                 <ul class="flex space-x-6 text-sm font-medium">
-                     <li>
+                    <li>
                         <a href="../admin_dashboard.php" class="hover:text-yellow-400 transition duration-300">Dashboard</a>
                     </li>
                     <li>

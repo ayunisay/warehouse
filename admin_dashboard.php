@@ -1,5 +1,6 @@
 <?php
-include('koneksi.php');
+session_start();
+include('koneksi.php'); 
 
 if (isset($_GET['delete'])) {
     $id_barang_rsk = intval($_GET['delete']); // Pastikan parameter adalah angka
@@ -92,7 +93,7 @@ if (!$resultTrends) {
                             <a href="./admin/kelola_user.php" class="hover:text-yellow-400 transition duration-300">User</a>
                         </li>
                         <li>
-                            <a href="./admin/riwayat.php" class="hover:text-yellow-400 transition duration-300">Riwayat</a>
+                            <a href="./admin/riwayat.php" class="hover:text-yellow-400 transition duration-300">Riwayat Keluar</a>
                         </li>
                         <li>
                             <a href="./admin/kelola_permintaan.php" class="hover:text-yellow-400 transition duration-300">Permintaan Barang</a>

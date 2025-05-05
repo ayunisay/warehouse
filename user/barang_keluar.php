@@ -1,4 +1,5 @@
 <?php
+session_start();
 include('../koneksi.php');
 
 // Inisialisasi default untuk $edit_data
@@ -248,10 +249,9 @@ if (isset($_GET['edit'])) {
                         </select>
                     </div>
                 </div>
-                <div>
-                    <label for="keterangan" class="block text-gray-600 font-medium mb-2 mt-5">Keterangan</label>
-                    <textarea id="keterangan" name="keterangan" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="keluarkan keterangan barang" required>
-                    <?= $edit_data ? $edit_data['keterangan'] : "keluarkan keterangan barang"?>
+                <div class="mt-4">
+                    <label for="keterangan" class="block text-gray-600 font-medium mb-2">Keterangan Barang Keluar</label>
+                    <textarea id="keterangan" name="keterangan" rows="4" class="w-full px-1 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-left" placeholder="Masukkan keterangan" value="<?php echo $edit_data ? htmlspecialchars($edit_data['keterangan']) : ''; ?>" " required>
                     </textarea>
                 </div>
                 <button type="submit" name="<?php echo $edit_data ? 'update' : 'insert'; ?>" class="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition duration-300">

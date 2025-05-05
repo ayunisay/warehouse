@@ -1,29 +1,37 @@
 <?php
+session_start();
 include('../koneksi.php');
+
+// Inisialisasi default untuk $edit_data
+$edit_data = null;
 
 // insert
 if (isset($_POST['insert'])) {
-    $nama_barang = $_POST['nama_barang'];
+    $id_barang = $_POST['id_barang'];
     $jumlah = $_POST['jumlah'];
     $deskripsi = $_POST['deskripsi'];
 
-    if (!empty($nama_barang) && !empty($jumlah) && !empty($deskripsi)) {
-        $stmt = $conn->prepare("INSERT INTO barang_rusak (nama_barang, jumlah, deskripsi) VALUES (?, ?, ?)");
-        $stmt->bind_param("sis", $nama_barang, $jumlah, $deskripsi);
+    if (!empty($id_barang) && !empty($jumlah) && !empty($deskripsi)) {
+        $stmt = $conn->prepare("INSERT INTO barang_rusak (id_barang, jumlah, deskripsi) VALUES (?, ?, ?)");
+        $stmt->bind_param("iis", $id_barang, $jumlah, $deskripsi);
 
-            // Cek stok cukup
-        $stok = $conn->query("SELECT jumlah FROM stok_barang WHERE id_barang = $id_barang")->fetch_assoc()['jumlah'];
+    // Cek stok cukup
+    $stok = $conn->query("SELECT jumlah FROM stok_barang WHERE id_barang = $id_barang")->fetch_assoc()['jumlah'];
+
         if ($stok >= $jumlah) {
         // Update stok
         $conn->query("UPDATE stok_barang SET jumlah = jumlah - $jumlah WHERE id_barang = $id_barang");
 
             if ($stmt->execute()) {
+                // Dapatkan ID terakhir yang dikeluarkan
+                $id_keluar = $conn->insert_id;
+
                 // Catat aktivitas ke tabel audit_trail
                 $tanggal = date('Y-m-d');
                 $waktu = date('H:i:s');
                 $pengguna = $_SESSION['username'] ?? 'Unknown'; // Pastikan session menyimpan username pengguna
                 $aksi = "Melaporkan Kerusakan";
-                $detail = "Melaporkan kerusakan untuk " . $nama_barang . " jumlah " . $jumlah;
+                $detail = "Melaporkan kerusakan untuk " . $id_barang . " dengan jumlah " . $jumlah . " dan deskripsi: " . $deskripsi;
 
                 $logStmt = $conn->prepare("INSERT INTO audit_trail (tanggal, waktu, nama_pengaju, aksi, detail) VALUES (?, ?, ?, ?, ?)");
                 $logStmt->bind_param("sssss", $tanggal, $waktu, $pengguna, $aksi, $detail);
@@ -41,11 +49,43 @@ if (isset($_POST['insert'])) {
     }
 }
 
+if (isset($_POST['update'])) {
+    $id_barang_rsk = $_POST['id_barang_rsk'];
+    $id_barang = $_POST['id_barang'];
+    $nama_barang = $_POST['stok_barang.nama_barang'];
+    $jumlah = $_POST['jumlah'];
+    $deskripsi = $_POST['deskripsi'];
+
+    $stmt = $conn->prepare("UPDATE barang_rusak JOIN stok_barang.nama_barang SET stok_barang.nama_barang=?, jumlah=?, deskripsi=? WHERE id_barang_rsk=?");
+    $stmt->bind_param("isi", $nama_barang, $jumlah, $deskripsi, $id_barang_rsk);
+
+    if ($stmt->execute()) {
+        // Catat aktivitas ke tabel audit_trail
+        $tanggal = date('Y-m-d');
+        $waktu = date('H:i:s');
+        $pengguna = $_SESSION['username'] ?? 'Unknown'; // Pastikan session menyimpan username pengguna
+        $aksi = "Update Barang Rusak";
+        $detail = "Update Barang Rusak " . $id_barang_rsk . " jumlah " . $jumlah;
+
+        $logStmt = $conn->prepare("INSERT INTO audit_trail (tanggal, waktu, nama_pengaju, aksi, detail) VALUES (?, ?, ?, ?, ?)");
+        $logStmt->bind_param("sssss", $tanggal, $waktu, $pengguna, $aksi, $detail);
+        $logStmt->execute();
+
+        $success = "Laporan Barang Rusak berhasil diperbarui!";
+        header("Location: barang_keluar.php");
+        exit();
+    } else {
+        $error = "Gagal update laporan barang rusak!";
+    }
+} else {
+    $error = "Semua field harus diisi!";
+}
+
 if (isset($_GET['delete'])) {
     $id_barang_rsk = intval($_GET['delete']); // Pastikan parameter adalah angka
 
     // Periksa status laporan
-    $stmt = $conn->prepare("SELECT status FROM barang_rusak WHERE id_barang_rsk = ?");
+    $stmt = $conn->prepare("SELECT COUNT(*) AS count FROM barang_rusak WHERE id_barang_rsk = ?");
     $stmt->bind_param("i", $id_barang_rsk);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -54,21 +94,42 @@ if (isset($_GET['delete'])) {
         $row = $result->fetch_assoc();
         if ($row['status'] === 'Pending') {
             // Hapus laporan jika statusnya Pending
-            $deleteStmt = $conn->prepare("DELETE FROM barang_rusak WHERE id_barang_rsk = ?");
-            $deleteStmt->bind_param("i", $id_barang_rsk);
+            $stmt_delete = $conn->prepare("DELETE FROM barang_rusak WHERE id_barang_rsk = ?");
+            $stmt_delete->bind_param("i", $id_barang_rsk);
 
-            if ($deleteStmt->execute()) {
+            if ($stmt_delete->execute()) {
+                // Catat aktivitas ke tabel audit_trail
+                $tanggal = date('Y-m-d');
+                $waktu = date('H:i:s');
+                $pengguna = $_SESSION['username'] ?? 'Unknown'; // Pastikan session menyimpan username pengguna
+                $aksi = "Menghapus laporan barang rusak";
+                $detail = "Menghapus laporan barang rusak ID: " . $id_barang_rsk;
+
+                $logStmt = $conn->prepare("INSERT INTO audit_trail (tanggal, waktu, nama_pengaju, aksi, detail) VALUES (?, ?, ?, ?, ?)");
+                $logStmt->bind_param("sssss", $tanggal, $waktu, $pengguna, $aksi, $detail);
+                $logStmt->execute();
+
                 $success = "Laporan berhasil dihapus!";
-                header("Location: laporan_kerusakan.php"); // Redirect setelah delete
+                header("Location: laporan_kerusakan.php");
                 exit();
             } else {
                 $error = "Gagal menghapus laporan!";
             }
         } else {
-            $error = "Laporan tidak dapat dihapus karena statusnya bukan Pending.";
-        }
+            $error = "Laporan tidak ditemukan!";
+    }
+}
+}
+
+// Melakukan Get Data
+if (isset($_GET['edit'])) {
+    $id_barang_rsk = $_GET['edit'];
+    $result = $conn->query("SELECT * FROM barang_rusak WHERE id_barang_rsk = $id_barang_rsk");
+
+    if ($result && $result->num_rows > 0) {
+        $edit_data = $result->fetch_assoc();
     } else {
-        $error = "Laporan tidak ditemukan.";
+        $edit_data = null; // Jika data tidak ditemukan
     }
 }
 ?>
@@ -125,10 +186,15 @@ if (isset($_GET['delete'])) {
 
         <!-- Damage Report Form -->
         <div class="bg-white shadow-md rounded-lg p-6">
-            <h2 class="text-2xl font-bold text-gray-700 mb-4">Laporan Kerusakan</h2>
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">
+                <?php echo $edit_data ? "Edit Laporan Kerusakan" : "Tambah Laporan Kerusakan"; ?>
+            </h2>
             <form method="POST">
+                <?php if ($edit_data): ?>
+                    <input type="hidden" name="id_barang" value="<?php echo htmlspecialchars($edit_data['id_barang']); ?>">
+                <?php endif; ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+                    <div>
                         <label for="id_barang" class="block text-gray-600 font-medium mb-2">Nama Barang</label>
                         <select id="id_barang" name="id_barang" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
                             <option value="" disabled selected>Pilih Barang</option>
@@ -136,7 +202,7 @@ if (isset($_GET['delete'])) {
                             $barangResult = $conn->query("SELECT * FROM stok_barang");
                             if ($barangResult && $barangResult->num_rows > 0) {
                                 while ($id_barang = $barangResult->fetch_assoc()) {
-                                    $selected = ($edit_data && $edit_data['id_rak'] === $id_barang['id_barang']) ? 'selected' : '';
+                                    $selected = ($edit_data && $edit_data['id_barang'] === $id_barang['id_barang']) ? 'selected' : '';
                                     echo "<option value='" . htmlspecialchars($id_barang['id_barang']) . "' $selected>" . htmlspecialchars($id_barang['nama_barang']) . "</option>";
                                 }
                             } else {
@@ -147,12 +213,12 @@ if (isset($_GET['delete'])) {
                     </div>
                     <div>
                         <label for="jumlah" class="block text-gray-600 font-medium mb-2">Jumlah</label>
-                        <input type="number" id="jumlah" name="jumlah" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Masukkan jumlah barang" required>
+                        <input type="number" id="jumlah" name="jumlah" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Masukkan jumlah barang" value="<?php echo $edit_data ? htmlspecialchars($edit_data['jumlah']) : ''; ?>" " required>
                     </div>
                 </div>
                 <div class="mt-4">
                     <label for="deskripsi" class="block text-gray-600 font-medium mb-2">Deskripsi Kerusakan</label>
-                    <textarea id="deskripsi" name="deskripsi" rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Jelaskan kerusakan atau kehilangan barang" required></textarea>
+                    <textarea id="deskripsi" name="deskripsi" rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Jelaskan kerusakan atau kehilangan barang" value="<?php echo $edit_data ? htmlspecialchars($edit_data['deskripsi']) : ''; ?>" " required></textarea>
                 </div>
                 <button type="submit" name="insert" class="mt-4 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition duration-300">Kirim Laporan</button>
             </form>
@@ -195,8 +261,8 @@ if (isset($_GET['delete'])) {
                                         </td>
                                         <td class='py-3 px-4'>" . htmlspecialchars($row['tanggal']) . "</td>
                                         <td class='py-3 px-4'>";
-                                if ($row['status'] === 'Pending') {
-                                    echo "<a href='?delete=" . $row['id_barang_rsk'] . "' onclick=\"return confirm('Yakin ingin menghapus?')\" class='text-red-500 hover:underline'>Hapus</a>";
+                                        if ($row['status'] === 'Pending') {
+                                            echo "<a href='?edit=" . $row['id_barang_rsk'] . "' class='text-blue-500 hover:underline'>Edit</a> | <a href='?delete=" . $row['id_barang_rsk'] . "' onclick=\"return confirm('Yakin ingin menghapus?')\" class='text-red-500 hover:underline'>Hapus</a>";
                                 } else {
                                     echo "<span class='text-gray-400'>-</span>";
                                 }
