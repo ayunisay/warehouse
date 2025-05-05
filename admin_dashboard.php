@@ -92,7 +92,7 @@ if (!$resultTrends) {
                             <a href="./admin/kelola_user.php" class="hover:text-yellow-400 transition duration-300">User</a>
                         </li>
                         <li>
-                            <a href="./admin/kelola_transaksi.php" class="hover:text-yellow-400 transition duration-300">Transaksi</a>
+                            <a href="./admin/riwayat.php" class="hover:text-yellow-400 transition duration-300">Riwayat</a>
                         </li>
                         <li>
                             <a href="./admin/kelola_permintaan.php" class="hover:text-yellow-400 transition duration-300">Permintaan Barang</a>

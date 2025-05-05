@@ -61,7 +61,7 @@ if ($result && $result->num_rows > 0) {
                         <a href="./user/permintaan_barang.php" class="hover:text-yellow-400 transition duration-300">Permintaan Barang</a>
                     </li>
                     <li>
-                        <a href="./user/riwayat_transaksi.php" class="hover:text-yellow-400 transition duration-300">Riwayat Transaksi</a>
+                        <a href="./user/barang_keluar.php" class="hover:text-yellow-400 transition duration-300">Barang Keluar</a>
                     </li>
                     <li>
                         <a href="./user/laporan_kerusakan.php" class="hover:text-yellow-400 transition duration-300">Laporan Kerusakan</a>

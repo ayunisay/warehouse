@@ -11,26 +11,33 @@ if (isset($_POST['insert'])) {
         $stmt = $conn->prepare("INSERT INTO barang_rusak (nama_barang, jumlah, deskripsi) VALUES (?, ?, ?)");
         $stmt->bind_param("sis", $nama_barang, $jumlah, $deskripsi);
 
-        if ($stmt->execute()) {
-            // Catat aktivitas ke tabel audit_trail
-            $tanggal = date('Y-m-d');
-            $waktu = date('H:i:s');
-            $pengguna = $_SESSION['username'] ?? 'Unknown'; // Pastikan session menyimpan username pengguna
-            $aksi = "Melaporkan Kerusakan";
-            $detail = "Melaporkan kerusakan untuk " . $nama_barang . " jumlah " . $jumlah;
+            // Cek stok cukup
+        $stok = $conn->query("SELECT jumlah FROM stok_barang WHERE id_barang = $id_barang")->fetch_assoc()['jumlah'];
+        if ($stok >= $jumlah) {
+        // Update stok
+        $conn->query("UPDATE stok_barang SET jumlah = jumlah - $jumlah WHERE id_barang = $id_barang");
 
-            $logStmt = $conn->prepare("INSERT INTO audit_trail (tanggal, waktu, nama_pengaju, aksi, detail) VALUES (?, ?, ?, ?, ?)");
-            $logStmt->bind_param("sssss", $tanggal, $waktu, $pengguna, $aksi, $detail);
-            $logStmt->execute();
+            if ($stmt->execute()) {
+                // Catat aktivitas ke tabel audit_trail
+                $tanggal = date('Y-m-d');
+                $waktu = date('H:i:s');
+                $pengguna = $_SESSION['username'] ?? 'Unknown'; // Pastikan session menyimpan username pengguna
+                $aksi = "Melaporkan Kerusakan";
+                $detail = "Melaporkan kerusakan untuk " . $nama_barang . " jumlah " . $jumlah;
 
-            $success = "Laporan kerusakan berhasil ditambahkan!";
-            header("Location: laporan_kerusakan.php");
-            exit();
+                $logStmt = $conn->prepare("INSERT INTO audit_trail (tanggal, waktu, nama_pengaju, aksi, detail) VALUES (?, ?, ?, ?, ?)");
+                $logStmt->bind_param("sssss", $tanggal, $waktu, $pengguna, $aksi, $detail);
+                $logStmt->execute();
+
+                $success = "Laporan kerusakan berhasil ditambahkan!";
+                header("Location: laporan_kerusakan.php");
+                exit();
+            } else {
+                $error = "Gagal menambahkan laporan kerusakan!";
+            }
         } else {
-            $error = "Gagal menambahkan laporan kerusakan!";
+            $error = "Semua field harus diisi!";
         }
-    } else {
-        $error = "Semua field harus diisi!";
     }
 }
 
@@ -94,7 +101,7 @@ if (isset($_GET['delete'])) {
                         <a href="permintaan_barang.php" class="hover:text-yellow-400 transition duration-300">Permintaan Barang</a>
                     </li>
                     <li>
-                        <a href="riwayat_transaksi.php" class="hover:text-yellow-400 transition duration-300">Riwayat Transaksi</a>
+                        <a href="barang_keluar.php" class="hover:text-yellow-400 transition duration-300">Barang Keluar</a>
                     </li>
                     <li>
                         <a href="laporan_kerusakan.php" class="hover:text-yellow-400 transition duration-300">Laporan Kerusakan</a>

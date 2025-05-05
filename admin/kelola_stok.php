@@ -156,7 +156,7 @@ if (isset($_GET['edit'])) {
                         <a href="kelola_user.php" class="hover:text-yellow-400 transition duration-300">User</a>
                     </li>
                     <li>
-                        <a href="kelola_transaksi.php" class="hover:text-yellow-400 transition duration-300">Transaksi</a>
+                        <a href="riwayat.php" class="hover:text-yellow-400 transition duration-300">Riwayat Keluar</a>
                     </li>
                     <li>
                         <a href="kelola_permintaan.php" class="hover:text-yellow-400 transition duration-300">Permintaan Barang</a>
@@ -254,15 +254,26 @@ if (isset($_GET['edit'])) {
                         <select id="id_rak" name="id_rak" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
                             <option value="" disabled selected>Pilih lokasi</option>
                             <?php
-                            $rakResult = $conn->query("SELECT * FROM rak_barang");
-                            if ($rakResult && $rakResult->num_rows > 0) {
-                                while ($id_rak = $rakResult->fetch_assoc()) {
-                                    $selected = ($edit_data && $edit_data['id_rak'] === $id_rak['id_rak']) ? 'selected' : '';
-                                    echo "<option value='" . htmlspecialchars($id_rak['id_rak']) . "' $selected>" . htmlspecialchars($id_rak['lokasi']) . "</option>";
+                                $rakResult = $conn->query("SELECT * FROM rak_barang");
+
+                                $rakBarangResult = $conn->query("SELECT id_rak FROM stok_barang");
+                                $usedRak = [];
+                                if ($rakBarangResult && $rakBarangResult->num_rows > 0) {
+                                    while ($row = $rakBarangResult->fetch_assoc()) {
+                                        $usedRak[] = $row['id_rak'];
+                                    }
                                 }
-                            } else {
-                                echo "<option value='' disabled>Tidak ada kategori tersedia</option>";
-                            }
+
+                                if ($rakResult && $rakResult->num_rows > 0) {
+                                    while ($rak = $rakResult->fetch_assoc()) {
+                                        if (!in_array($rak['id_rak'], $usedRak)) {
+                                            $selected = ($edit_data && $edit_data['id_rak'] === $rak['id_rak']) ? 'selected' : '';
+                                            echo "<option value='" . htmlspecialchars($rak['id_rak']) . "' $selected>" . htmlspecialchars($rak['lokasi']) . "</option>";
+                                        }
+                                    }
+                                } else {
+                                    echo "<option value='' disabled>Tidak ada lokasi tersedia</option>";
+                                }
                             ?>
                         </select>
                     </div>

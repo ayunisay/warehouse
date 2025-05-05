@@ -149,7 +149,7 @@ if (isset($_GET['edit'])) {
                         <a href="kelola_user.php" class="hover:text-yellow-400 transition duration-300">User</a>
                     </li>
                     <li>
-                        <a href="kelola_transaksi.php" class="hover:text-yellow-400 transition duration-300">Transaksi</a>
+                        <a href="riwayat.php" class="hover:text-yellow-400 transition duration-300">Riwayat Keluar</a>
                     </li>
                     <li>
                         <a href="kelola_permintaan.php" class="hover:text-yellow-400 transition duration-300">Permintaan Barang</a>

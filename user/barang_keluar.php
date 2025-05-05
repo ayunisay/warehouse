@@ -5,53 +5,58 @@ include('../koneksi.php');
 $edit_data = null;
 
 if (isset($_POST['insert'])) {
-    $id_keluar = $_POST['id_keluar'];
     $id_barang = $_POST['id_barang'];
-    $tanggal = $_POST['tanggal'];
     $jumlah = $_POST['jumlah'];
     $keterangan = $_POST['keterangan'];
 
+    if (!empty($id_barang) && !empty($jumlah) && !empty($keterangan)) {
+        $stmt = $conn->prepare("INSERT INTO keluar (id_barang, jumlah, keterangan) VALUES (?, ?, ?)");
+        $stmt->bind_param("iis", $id_barang, $jumlah, $keterangan);
+
     // Cek stok cukup
-    $stok = $koneksi->query("SELECT jumlah FROM stok_barang WHERE id_barang = $id_barang")->fetch_assoc()['jumlah'];
-    if ($stok >= $jumlah) {
-        // Update stok
-        $koneksi->query("UPDATE stok_barang SET jumlah = jumlah - $jumlah WHERE id_barang = $id_barang");
+    $stok = $conn->query("SELECT jumlah FROM stok_barang WHERE id_barang = $id_barang")->fetch_assoc()['jumlah'];
+    
+        if ($stok >= $jumlah) {
+            // Update stok
+            $conn->query("UPDATE stok_barang SET jumlah = jumlah - $jumlah WHERE id_barang = $id_barang");
 
-        if ($stmt->execute()) {
-            // Dapatkan ID terakhir yang dimasukkan
-            $id_keluar = $conn->insert_id;
+            if ($stmt->execute()) {
+                // Dapatkan ID terakhir yang dikeluarkan
+                $id_keluar = $conn->insert_id;
 
-            // Catat aktivitas ke tabel audit_trail
-            $tanggal = date('Y-m-d');
-            $waktu = date('H:i:s');
-            $pengguna = $_SESSION['username'] ?? 'Unknown'; // Pastikan session menyimpan username pengguna
-            $aksi = "Menambahkan barang";
-            $detail = "Menambahkan barang ID: " . $id_keluar;
+                // Catat aktivitas ke tabel audit_trail
+                $tanggal = date('Y-m-d');
+                $waktu = date('H:i:s');
+                $pengguna = $_SESSION['username'] ?? 'Unknown'; // Pastikan session menyimpan username pengguna
+                $aksi = "Menambahkan barang";
+                $detail = "Menambahkan barang ID: " . $id_keluar;
 
-            $logStmt = $conn->prepare("INSERT INTO audit_trail (tanggal, waktu, nama_pengaju, aksi, detail) VALUES (?, ?, ?, ?, ?)");
-            $logStmt->bind_param("sssss", $tanggal, $waktu, $pengguna, $aksi, $detail);
-            $logStmt->execute();
+                $logStmt = $conn->prepare("INSERT INTO audit_trail (tanggal, waktu, nama_pengaju, aksi, detail) VALUES (?, ?, ?, ?, ?)");
+                $logStmt->bind_param("sssss", $tanggal, $waktu, $pengguna, $aksi, $detail);
+                $logStmt->execute();
 
-            $success = "Barang berhasil ditambahkan!";
-            header("Location: riwayat_transaksi.php");
-            exit();
+                $success = "Barang berhasil ditambahkan!";
+                header("Location: barang_keluar.php");
+                exit();
+            } else {
+                $error = "Gagal menambahkan barang!";
+            }
         } else {
-            $error = "Gagal menambahkan barang!";
+            $error = "Semua field harus diisi!";
         }
-    } else {
-        $error = "Semua field harus diisi!";
     }
 }
 
 if (isset($_POST['update'])) {
     $id_keluar = $_POST['id_keluar'];
     $id_barang = $_POST['id_barang'];
+    $nama_barang = $_POST['stok_barang.nama_barang'];
     $tanggal = $_POST['tanggal'];
     $jumlah = $_POST['jumlah'];
     $keterangan = $_POST['keterangan'];
 
-    $stmt = $conn->prepare("UPDATE masuk SET id_barang=?, tanggal=?, jumlah=?, keterangan=? WHERE id_keluar=?");
-    $stmt->bind_param("issi", $id_barang, $tanggal, $jumlah, $keterangan, $id_keluar);
+    $stmt = $conn->prepare("UPDATE keluar JOIN stok_barang.nama_barang SET stok_barang.nama_barang=?, tanggal=?, jumlah=?, keterangan=? WHERE id_keluar=?");
+    $stmt->bind_param("issi", $nama_barang, $tanggal, $jumlah, $keterangan, $id_keluar);
 
     if ($stmt->execute()) {
         // Catat aktivitas ke tabel audit_trail
@@ -66,7 +71,7 @@ if (isset($_POST['update'])) {
         $logStmt->execute();
 
         $success = "Barang berhasil diperbarui!";
-        header("Location: riwayat_transaksi.php");
+        header("Location: barang_keluar.php");
         exit();
     } else {
         $error = "Gagal update barang!";
@@ -80,7 +85,7 @@ if (isset($_GET['delete'])) {
     $id_keluar = intval($_GET['delete']); // Pastikan parameter adalah angka
 
     // Periksa apakah data barang ada di tabel
-    $stmt_check = $conn->prepare("SELECT COUNT(*) AS count FROM masuk WHERE id_keluar = ?");
+    $stmt_check = $conn->prepare("SELECT COUNT(*) AS count FROM keluar WHERE id_keluar = ?");
     $stmt_check->bind_param("i", $id_keluar);
     $stmt_check->execute();
     $result_check = $stmt_check->get_result();
@@ -88,7 +93,7 @@ if (isset($_GET['delete'])) {
 
     if ($row_check['count'] > 0) {
         // Hapus barang berdasarkan ID
-        $stmt_delete = $conn->prepare("DELETE FROM stok_barang WHERE id_keluar = ?");
+        $stmt_delete = $conn->prepare("DELETE FROM keluar WHERE id_keluar = ?");
         $stmt_delete->bind_param("i", $id_keluar);
 
         if ($stmt_delete->execute()) {
@@ -104,7 +109,7 @@ if (isset($_GET['delete'])) {
             $logStmt->execute();
 
             $success = "Barang berhasil dihapus!";
-            header("Location: riwayat_transaksi.php");
+            header("Location: barang_keluar.php");
             exit();
         } else {
             $error = "Gagal menghapus barang!";
@@ -117,7 +122,7 @@ if (isset($_GET['delete'])) {
 // Melakukan Get Data
 if (isset($_GET['edit'])) {
     $id_keluar = $_GET['edit'];
-    $result = $conn->query("SELECT * FROM masuk WHERE id_keluar = $id_keluar");
+    $result = $conn->query("SELECT * FROM keluar WHERE id_keluar = $id_keluar");
 
     if ($result && $result->num_rows > 0) {
         $edit_data = $result->fetch_assoc();
@@ -131,7 +136,7 @@ if (isset($_GET['edit'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Barang</title>
+    <title>Kelola Barang Keluar</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
@@ -156,7 +161,7 @@ if (isset($_GET['edit'])) {
                         <a href="permintaan_barang.php" class="hover:text-yellow-400 transition duration-300">Permintaan Barang</a>
                     </li>
                     <li>
-                        <a href="riwayat_transaksi.php" class="hover:text-yellow-400 transition duration-300">Riwayat Transaksi</a>
+                        <a href="barang_keluar.php" class="hover:text-yellow-400 transition duration-300">Barang Keluar</a>
                     </li>
                     <li>
                         <a href="laporan_kerusakan.php" class="hover:text-yellow-400 transition duration-300">Laporan Kerusakan</a>
@@ -175,7 +180,7 @@ if (isset($_GET['edit'])) {
     </nav>
 
     <div class="container mx-auto mt-8">
-        <h1 class="text-3xl font-bold text-gray-700 mb-6">Kelola Barang</h1>
+        <h1 class="text-3xl font-bold text-gray-700 mb-6">Kelola Barang Keluar</h1>
 
         <!-- Add Item Form -->
         <div class="bg-white shadow-md rounded-lg p-6 mb-8 mt-8">
@@ -195,7 +200,7 @@ if (isset($_GET['edit'])) {
                             $barangResult = $conn->query("SELECT * FROM stok_barang");
                             if ($barangResult && $barangResult->num_rows > 0) {
                                 while ($id_barang = $barangResult->fetch_assoc()) {
-                                    $selected = ($edit_data && $edit_data['id_rak'] === $id_barang['id_barang']) ? 'selected' : '';
+                                    $selected = ($edit_data && $edit_data['id_barang'] === $id_barang['id_barang']) ? 'selected' : '';
                                     echo "<option value='" . htmlspecialchars($id_barang['id_barang']) . "' $selected>" . htmlspecialchars($id_barang['nama_barang']) . "</option>";
                                 }
                             } else {
@@ -209,11 +214,11 @@ if (isset($_GET['edit'])) {
                         <select id="id_kategori" name="id_kategori" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
                             <option value="" disabled selected>Pilih kategori</option>
                             <?php
-                            $kategoriResult = $conn->query("SELECT * FROM kategori_barang");
+                            $kategoriResult = $conn->query("SELECT kategori_barang.*, stok_barang.* FROM stok_barang JOIN kategori_barang ON stok_barang.id_kategori = kategori_barang.id_kategori");
                             if ($kategoriResult && $kategoriResult->num_rows > 0) {
                                 while ($kategori = $kategoriResult->fetch_assoc()) {
-                                    $selected = ($edit_data && $edit_data['id_kategori'] === $kategori['id_kategori']) ? 'selected' : '';
-                                    echo "<option value='" . htmlspecialchars($kategori['id_kategori']) . "' $selected>" . htmlspecialchars($kategori['nama_kategori']) . "</option>";
+                                    $selected = ($edit_data && $edit_data['id_barang'] === $kategori['id_barang']) ? 'selected' : '';
+                                    echo "<option value='" . htmlspecialchars($kategori['nama_kategori']) . "' $selected>" . htmlspecialchars($kategori['nama_kategori']) . "</option>";
                                 }
                             } else {
                                 echo "<option value='' disabled>Tidak ada kategori tersedia</option>";
@@ -223,18 +228,18 @@ if (isset($_GET['edit'])) {
                     </div>
                     <div>
                         <label for="jumlah" class="block text-gray-600 font-medium mb-2">Jumlah</label>
-                        <input type="number" id="jumlah" name="jumlah" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Masukkan jumlah barang" value="<?php echo $edit_data ? htmlspecialchars($edit_data['jumlah']) : ''; ?>" required>
+                        <input type="number" id="jumlah" name="jumlah" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="keluarkan jumlah barang" value="<?php echo $edit_data ? htmlspecialchars($edit_data['jumlah']) : ''; ?>" required>
                     </div>
                     <div>
                         <label for="id_rak" class="block text-gray-600 font-medium mb-2">Lokasi Penyimpanan</label>
                         <select id="id_rak" name="id_rak" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
                             <option value="" disabled selected>Pilih lokasi</option>
                             <?php
-                            $rakResult = $conn->query("SELECT * FROM rak_barang");
+                            $rakResult = $conn->query("SELECT rak_barang.*, stok_barang.* FROM stok_barang JOIN rak_barang ON stok_barang.id_rak = rak_barang.id_rak");
                             if ($rakResult && $rakResult->num_rows > 0) {
                                 while ($id_rak = $rakResult->fetch_assoc()) {
-                                    $selected = ($edit_data && $edit_data['id_rak'] === $id_rak['id_rak']) ? 'selected' : '';
-                                    echo "<option value='" . htmlspecialchars($id_rak['id_rak']) . "' $selected>" . htmlspecialchars($id_rak['lokasi']) . "</option>";
+                                    $selected = ($edit_data && $edit_data['id_barang'] === $id_rak['id_barang']) ? 'selected' : '';
+                                    echo "<option value='" . htmlspecialchars($id_rak['lokasi']) . "' $selected>" . htmlspecialchars($id_rak['lokasi']) . "</option>";
                                 }
                             } else {
                                 echo "<option value='' disabled>Tidak ada kategori tersedia</option>";
@@ -243,18 +248,24 @@ if (isset($_GET['edit'])) {
                         </select>
                     </div>
                 </div>
+                <div>
+                    <label for="keterangan" class="block text-gray-600 font-medium mb-2 mt-5">Keterangan</label>
+                    <textarea id="keterangan" name="keterangan" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="keluarkan keterangan barang" required>
+                    <?= $edit_data ? $edit_data['keterangan'] : "keluarkan keterangan barang"?>
+                    </textarea>
+                </div>
                 <button type="submit" name="<?php echo $edit_data ? 'update' : 'insert'; ?>" class="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition duration-300">
-                    <?php echo $edit_data ? "Edit Barang Masuk" : "Tambah Barang Masuk"; ?>
+                    <?php echo $edit_data ? "Edit Barang Keluar" : "Tambah Barang Keluar"; ?>
                 </button>
                 <?php if ($edit_data): ?>
-                    <a href="kelola_stok.php" class="mt-4 bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition duration-300">Batal</a>
+                    <a href="barang_keluar.php" class="mt-4 bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition duration-300">Batal</a>
                 <?php endif; ?>
             </form>
         </div>
 
         <!-- Stock Table -->
         <div class="bg-white shadow-md rounded-lg p-6">
-            <h2 class="text-2xl font-bold text-gray-700 mb-4">Daftar Barang</h2>
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Daftar Barang Keluar</h2>
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white border border-gray-300 rounded-lg">
                     <thead class="bg-gray-100">
@@ -269,7 +280,7 @@ if (isset($_GET['edit'])) {
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         <?php
-                            $sql = "SELECT id_barang, tanggal, jumlah, keterangan FROM masuk";
+                            $sql = "SELECT keluar.id_keluar, stok_barang.id_barang, stok_barang.nama_barang, keluar.tanggal, keluar.jumlah, keluar.keterangan FROM keluar JOIN stok_barang ON keluar.id_barang = stok_barang.id_barang;";
                             $result = $conn->query($sql);
 
                             $no = 1; // Inisialisasi nomor urut
@@ -278,13 +289,13 @@ if (isset($_GET['edit'])) {
                                 while ($row = $result->fetch_assoc()) {
                                     echo "<tr class='hover:bg-gray-50'>
                                             <td class='py-3 px-4'>" . htmlspecialchars($no++) . "</td>
-                                            <td class='py-3 px-4'>" . htmlspecialchars($row['id_barang']) . htmlspecialchars($row['nama_barang']) ."</td>
+                                            <td class='py-3 px-4'>" . htmlspecialchars($row['nama_barang']) ."</td>
                                             <td class='py-3 px-4'>" . htmlspecialchars($row['tanggal']) . "</td>
                                             <td class='py-3 px-4'>" . htmlspecialchars($row['jumlah']) . "</td>
                                             <td class='py-3 px-4'>" . htmlspecialchars($row['keterangan']) . "</td>
                                             <td class='py-3 px-4'>
-                                                <a href='?edit=" . $row['id_barang'] . "' class='text-blue-500 hover:underline'>Edit</a> |
-                                                <a href='?delete=" . $row['id_barang'] . "' onclick=\"return confirm('Yakin ingin menghapus?')\" class='text-red-500 hover:underline'>Hapus</a>
+                                                <a href='?edit=" . $row['id_keluar'] . "' class='text-blue-500 hover:underline'>Edit</a> |
+                                                <a href='?delete=" . $row['id_keluar'] . "' onclick=\"return confirm('Yakin ingin menghapus?')\" class='text-red-500 hover:underline'>Hapus</a>
                                             </td>
                                         </tr>";
                                 }
