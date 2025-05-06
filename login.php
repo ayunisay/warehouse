@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-300 font-sans leading-normal tracking-normal">
+<body class="bg-[url(bg.jpeg)] bg-no-repeat bg-cover bg-center h-screen font-sans leading-normal tracking-normal">
     <div class="container mx-auto mt-20">
         <div class="max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
             <h1 class="text-2xl font-bold text-gray-700 mb-4 text-center">Login</h1>

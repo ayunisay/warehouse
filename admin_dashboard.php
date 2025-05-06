@@ -2,6 +2,11 @@
 session_start();
 include('koneksi.php'); 
 
+if (!isset($_SESSION['id']) || $_SESSION['role'] !== 'admin') {
+    header('Location: login.php'); // atau redirect ke halaman error/403
+    exit();
+}
+
 if (isset($_GET['delete'])) {
     $id_barang_rsk = intval($_GET['delete']); // Pastikan parameter adalah angka
 
@@ -38,10 +43,10 @@ $queryPendingRequests = "SELECT COUNT(*) AS pending_requests FROM request WHERE 
 $resultPendingRequests = $conn->query($queryPendingRequests);
 $pendingRequests = $resultPendingRequests->fetch_assoc()['pending_requests'] ?? 0;
 
-// // Completed Transactions
-// $queryCompletedTransactions = "SELECT COUNT(*) AS completed_transactions FROM transaksi WHERE status = 'Completed'";
-// $resultCompletedTransactions = $conn->query($queryCompletedTransactions);
-// $completedTransactions = $resultCompletedTransactions->fetch_assoc()['completed_transactions'] ?? 0;
+// Barang kelaur
+$queryCompletedTransactions = "SELECT COUNT(*) AS completed_transactions FROM keluar WHERE jumlah";
+$resultCompletedTransactions = $conn->query($queryCompletedTransactions);
+$completedTransactions = $resultCompletedTransactions->fetch_assoc()['completed_transactions'] ?? 0;
 
 // Tren Permintaan Barang
 $sqlTrends = "SELECT nama_barang, COUNT(*) AS jumlah_permintaan, 
@@ -68,7 +73,7 @@ if (!$resultTrends) {
     <title>Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+<body class="bg-gray-100 font-sans leading-normal tracking-normal min-h-screen flex flex-col">
         <!-- Navbar -->
         <nav class="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
             <div class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -111,7 +116,7 @@ if (!$resultTrends) {
             </div>
         </nav>
 
-    <div class="container mx-auto mt-8">
+    <div class="container mx-auto mt-8 flex-grow">
         <h1 class="text-3xl font-bold text-gray-700 mb-6">Admin Dashboard</h1>
 
         <!-- Statistics Section -->
@@ -133,13 +138,13 @@ if (!$resultTrends) {
             <!-- Completed Transactions -->
             <div class="bg-white shadow-md rounded-lg p-6">
                 <h2 class="text-xl font-bold text-gray-700">Completed Transactions</h2>
-                <!-- <p class="text-4xl font-semibold text-green-600 mt-4"><?php echo $completedTransactions; ?></p> -->
+                <p class="text-4xl font-semibold text-green-600 mt-4"><?php echo $completedTransactions; ?></p>
                 <p class="text-sm text-gray-500 mt-2">Transactions successfully completed.</p>
             </div>
         </div>
 
         <!-- Menu2 -->
-        <div class="mt-8 bg-white shadow-md rounded-lg p-6">
+        <div class="bg-white shadow-md rounded-lg p-6 mt-8 flex-grow">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Generate Laporan -->
                 <a href="./admin/generate_laporan.php" class="group block bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
@@ -177,7 +182,7 @@ if (!$resultTrends) {
 
 
             <!-- Tren Permintaan Barang -->
-            <div class="bg-white shadow-md rounded-lg p-6 mt-8">
+            <div class="bg-white shadow-md rounded-lg p-6 mt-8 flex-grow">
                 <h2 class="text-2xl font-bold text-gray-700 mb-4">Tren Permintaan Barang</h2>
                 <table class="min-w-full bg-white border border-gray-300">
                     <thead class="bg-gray-100">
@@ -208,7 +213,7 @@ if (!$resultTrends) {
             </div>
 
         <!-- User Laporan Table -->
-        <div class="bg-white shadow-md rounded-lg p-6 mt-8">
+        <div class="bg-white shadow-md rounded-lg p-6 mt-8 flex-grow">
             <h2 class="text-2xl font-bold text-gray-700 mb-4">Laporan Kerusakan Barang</h2>
             <table class="min-w-full bg-white border border-gray-300 rounded-lg">
                 <thead class="bg-gray-100">
@@ -320,10 +325,12 @@ if (!$resultTrends) {
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white w-full mt-8 pb-5">
-            <div class="mt-8 border-t border-gray-700 pt-5 text-center">
-                <p class="text-sm text-gray-500">&copy; <?php echo date('Y'); ?> Warehouse Management System. All rights reserved.</p>
-            </div>
+    <footer class="bg-gray-900 text-white w-full pb-5 mt-8">
+        <div class="mt-5 text-center">
+            <p class="text-sm text-gray-500">
+                &copy; <?php echo date('Y'); ?> Warehouse Management System. All rights reserved.
+            </p>
+        </div>
     </footer>
 
 </body>

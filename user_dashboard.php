@@ -41,7 +41,7 @@ if ($result && $result->num_rows > 0) {
     <title>User Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+<body class="bg-gray-100 font-sans leading-normal tracking-normal min-h-screen flex flex-col">
     <!-- Navbar -->
     <nav class="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -53,10 +53,10 @@ if ($result && $result->num_rows > 0) {
             <div class="flex items-center space-x-11">
                 <ul class="flex space-x-6 text-sm font-medium">
                     <li>
-                        <a href="user_dashboard.php" class="hover:text-yellow-400 transition duration-300">User Dashboard</a>
+                        <a href="user_dashboard.php" class="hover:text-yellow-400 transition duration-300">Dashboard</a>
                     </li>
                     <li>
-                        <a href="./user/lihat_stok.php" class="hover:text-yellow-400 transition duration-300">Lihat Stok</a>
+                        <a href="./user/lihat_stok.php" class="hover:text-yellow-400 transition duration-300">Daftar Stok</a>
                     </li>
                     <li>
                         <a href="./user/permintaan_barang.php" class="hover:text-yellow-400 transition duration-300">Permintaan Barang</a>
@@ -80,8 +80,8 @@ if ($result && $result->num_rows > 0) {
         </div>
     </nav>
 
-    <div class="container mx-auto mt-8">
-        <h1 class="text-3xl font-bold text-gray-700 mb-6">Dashboard</h1>
+    <div class="container mx-auto mt-8 flex-grow">
+        <h1 class="text-3xl font-bold text-gray-700 mb-6">User Dashboard</h1>
 
         <!-- Stock Summary -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -139,7 +139,7 @@ if ($result && $result->num_rows > 0) {
         </div>
 
         <!-- Audit Trail Table -->
-        <div class="bg-white shadow-md rounded-lg p-6 mt-8">
+        <div class="bg-white shadow-md rounded-lg p-6 mt-8 flex-grow">
             <h2 class="text-2xl font-bold text-gray-700 mb-4">Log Aktivitas Sistem</h2>
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white border border-gray-300 rounded-lg">
@@ -177,9 +177,11 @@ if ($result && $result->num_rows > 0) {
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white w-full mt-8 pb-5">
-        <div class="mt-8 border-t border-gray-700 pt-5 text-center">
-            <p class="text-sm text-gray-500">&copy; <?php echo date('Y'); ?> Warehouse Management System. All rights reserved.</p>
+    <footer class="bg-gray-900 text-white w-full pb-5 mt-8">
+        <div class="mt-5 text-center">
+            <p class="text-sm text-gray-500">
+                &copy; <?php echo date('Y'); ?> Warehouse Management System. All rights reserved.
+            </p>
         </div>
     </footer>
 </body>

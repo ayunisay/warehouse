@@ -9,7 +9,7 @@ include('../koneksi.php'); // Pastikan file koneksi sudah ada dan benar
     <title>Generate Laporan</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+<body class="bg-gray-100 font-sans leading-normal tracking-normal min-h-screen flex flex-col">
         <!-- Navbar -->
         <nav class="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
             <div class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -52,7 +52,7 @@ include('../koneksi.php'); // Pastikan file koneksi sudah ada dan benar
             </div>
         </nav>
 
-    <div class="container mx-auto mt-8">
+    <div class="container mx-auto mt-8 flex-grow">
         <h1 class="text-3xl font-bold text-gray-700 mb-6">Generate Laporan</h1>
 
         <!-- Export Stock Report -->
@@ -84,9 +84,11 @@ include('../koneksi.php'); // Pastikan file koneksi sudah ada dan benar
     </div>
     
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white w-full mt-8 pb-5">
-        <div class="mt-8 border-t border-gray-700 pt-5 text-center">
-            <p class="text-sm text-gray-500">&copy; <?php echo date('Y'); ?> Warehouse Management System. All rights reserved.</p>
+    <footer class="bg-gray-900 text-white w-full pb-5 mt-8">
+        <div class="mt-5 text-center">
+            <p class="text-sm text-gray-500">
+                &copy; <?php echo date('Y'); ?> Warehouse Management System. All rights reserved.
+            </p>
         </div>
     </footer>
 </body>

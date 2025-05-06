@@ -7,10 +7,10 @@ include('../koneksi.php');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lihat Stok</title>
+    <title>Daftar Stok</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+<body class="bg-gray-100 font-sans leading-normal tracking-normal min-h-screen flex flex-col">
     <!-- Navbar -->
     <nav class="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -22,9 +22,10 @@ include('../koneksi.php');
             <div class="flex items-center space-x-11">
                 <ul class="flex space-x-6 text-sm font-medium">
                     <li>
-                        <a href="../user_dashboard.php" class="hover:text-yellow-400 transition duration-300">User Dashboard</a>                    </li>
+                        <a href="../user_dashboard.php" class="hover:text-yellow-400 transition duration-300">Dashboard</a>                    
+                    </li>
                     <li>
-                        <a href="lihat_stok.php" class="hover:text-yellow-400 transition duration-300">Lihat Stok</a>
+                        <a href="lihat_stok.php" class="hover:text-yellow-400 transition duration-300">Daftar Stok</a>
                     </li>
                     <li>
                         <a href="permintaan_barang.php" class="hover:text-yellow-400 transition duration-300">Permintaan Barang</a>
@@ -47,7 +48,7 @@ include('../koneksi.php');
             </div>
         </div>
     </nav>
-    <div class="container mx-auto mt-8">
+    <div class="container mx-auto mt-8 flex-grow">
         <h1 class="text-3xl font-bold text-gray-700 mb-6">Lihat Stok</h1>
 
         <!-- Stock Table -->
@@ -66,9 +67,7 @@ include('../koneksi.php');
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         <?php
-                        // Ambil data dari tabel stok_barang
-                        // $sql = "SELECT stok_barang.id_barang, stok_barang.nama_barang, stok_barang.jumlah, rak_barang.lokasi, kategori_barang.nama_kategori FROM stok_barang JOIN rak_barang ON stok_barang.id_rak = rak_barang.lokasi JOIN kategori_barang ON stok_barang.id_kategori = kategori_barang.nama_kategori";
-                        $sql = "SELECT id_barang, nama_barang, jumlah, id_rak, id_kategori FROM stok_barang";
+                        $sql = "SELECT stok_barang.id_barang, stok_barang.nama_barang, kategori_barang.id_kategori, kategori_barang.nama_kategori, stok_barang.jumlah, rak_barang.id_rak, rak_barang.lokasi FROM stok_barang JOIN kategori_barang ON stok_barang.id_kategori = kategori_barang.id_kategori JOIN rak_barang ON stok_barang.id_rak = rak_barang.id_rak";
                         $result = $conn->query($sql);
                         $no = 1;
 
@@ -78,8 +77,8 @@ include('../koneksi.php');
                                         <td class='py-3 px-4'>" . htmlspecialchars($no++) . "</td>
                                         <td class='py-3 px-4'>" . htmlspecialchars($row['nama_barang']) . "</td>
                                         <td class='py-3 px-4'>" . htmlspecialchars($row['jumlah']) . "</td>
-                                        <td class='py-3 px-4'>" . htmlspecialchars($row['id_rak']) . "</td>
-                                        <td class='py-3 px-4'>" . htmlspecialchars($row['id_kategori']) . "</td>
+                                        <td class='py-3 px-4'>" . htmlspecialchars($row['lokasi']) . "</td>
+                                        <td class='py-3 px-4'>" . htmlspecialchars($row['nama_kategori']) . "</td>
                                     </tr>";
                             }
                         } else {
@@ -95,9 +94,11 @@ include('../koneksi.php');
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white w-full mt-8 pb-5">
-        <div class="mt-8 border-t border-gray-700 pt-5 text-center">
-            <p class="text-sm text-gray-500">&copy; <?php echo date('Y'); ?> Warehouse Management System. All rights reserved.</p>
+    <footer class="bg-gray-900 text-white w-full pb-5 mt-8">
+        <div class="mt-5 text-center">
+            <p class="text-sm text-gray-500">
+                &copy; <?php echo date('Y'); ?> Warehouse Management System. All rights reserved.
+            </p>
         </div>
     </footer>
 </body>

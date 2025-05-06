@@ -131,7 +131,7 @@ if (isset($_GET['edit'])) {
     <title>Kelola Stok</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+<body class="bg-gray-100 font-sans leading-normal tracking-normal min-h-screen flex flex-col">
     <!-- Navbar -->
     <nav class="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -174,7 +174,7 @@ if (isset($_GET['edit'])) {
         </div>
     </nav>
 
-    <div class="container mx-auto mt-8">
+    <div class="container mx-auto mt-8 flex-grow">
         <h1 class="text-3xl font-bold text-gray-700 mb-6">Kelola Stok</h1>
 
 
@@ -215,7 +215,7 @@ if (isset($_GET['edit'])) {
         </div>
 
         <!-- Add Item Form -->
-        <div class="bg-white shadow-md rounded-lg p-6 mb-8 mt-8">
+        <div class="bg-white shadow-md rounded-lg p-6 mt-8 flex-grow">
             <h2 class="text-2xl font-bold text-gray-700 mb-4">
                 <?php echo $edit_data ? "Edit Barang" : "Tambah Barang"; ?>
             </h2>
@@ -255,23 +255,30 @@ if (isset($_GET['edit'])) {
                             <option value="" disabled selected>Pilih lokasi</option>
                             <?php
                                 $rakResult = $conn->query("SELECT * FROM rak_barang");
-
-                                $rakBarangResult = $conn->query("SELECT id_rak FROM stok_barang");
-                                $usedRak = [];
-                                if ($rakBarangResult && $rakBarangResult->num_rows > 0) {
-                                    while ($row = $rakBarangResult->fetch_assoc()) {
-                                        $usedRak[] = $row['id_rak'];
-                                    }
-                                }
-                                if ($rakResult && $rakResult->num_rows > 0) {
-                                    while ($rak = $rakResult->fetch_assoc()) {
-                                        if (!in_array($rak['id_rak'], $usedRak)) {
+                                if (isset($_GET['edit'])) {
+                                    if ($rakResult && $rakResult->num_rows > 0) {
+                                        while ($rak = $rakResult->fetch_assoc()) {
                                             $selected = ($edit_data && $edit_data['id_rak'] === $rak['id_rak']) ? 'selected' : '';
                                             echo "<option value='" . htmlspecialchars($rak['id_rak']) . "' $selected>" . htmlspecialchars($rak['lokasi']) . "</option>";
                                         }
+                                    } else {
+                                        echo "<option value='' disabled>Tidak ada lokasi tersedia</option>";
                                     }
                                 } else {
-                                    echo "<option value='' disabled>Tidak ada lokasi tersedia</option>";
+                                    $idRakResult = $conn->query("SELECT id_rak FROM stok_barang");
+                                    $usedRak = [];
+                                    while ($idRakDipakai = $idRakResult->fetch_assoc()) {
+                                        $usedRak[] = $idRakDipakai['id_rak'];
+                                    }
+                                    if ($rakResult && $rakResult->num_rows > 0) {
+                                        while ($rak = $rakResult->fetch_assoc()) {
+                                            if (!in_array($rak['id_rak'], $usedRak)) {
+                                                echo "<option value='" . htmlspecialchars($rak['id_rak']) . "'>" . htmlspecialchars($rak['lokasi']) . "</option>";
+                                            }
+                                        }
+                                    } else {
+                                        echo "<option value='' disabled>Tidak ada lokasi tersedia</option>";
+                                    }
                                 }
                             ?>
                         </select>
@@ -287,7 +294,7 @@ if (isset($_GET['edit'])) {
         </div>
 
         <!-- Stock Table -->
-        <div class="bg-white shadow-md rounded-lg p-6">
+        <div class="bg-white shadow-md rounded-lg p-6 mt-8 flex-grow">
             <h2 class="text-2xl font-bold text-gray-700 mb-4">Daftar Barang</h2>
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white border border-gray-300 rounded-lg">
@@ -335,9 +342,11 @@ if (isset($_GET['edit'])) {
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white w-full mt-8 pb-5">
-        <div class="mt-8 border-t border-gray-700 pt-5 text-center">
-            <p class="text-sm text-gray-500">&copy; <?php echo date('Y'); ?> Warehouse Management System. All rights reserved.</p>
+    <footer class="bg-gray-900 text-white w-full pb-5 mt-8">
+        <div class="mt-5 text-center">
+            <p class="text-sm text-gray-500">
+                &copy; <?php echo date('Y'); ?> Warehouse Management System. All rights reserved.
+            </p>
         </div>
     </footer>
 
