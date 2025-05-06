@@ -51,8 +51,8 @@ $completedTransactions = $resultCompletedTransactions->fetch_assoc()['completed_
 // Tren Permintaan Barang
 $sqlTrends = "SELECT nama_barang, COUNT(*) AS jumlah_permintaan, 
               CASE 
-                  WHEN COUNT(*) > 30 THEN 'High Demand'
-                  WHEN COUNT(*) BETWEEN 10 AND 20 THEN 'Moderate Demand'
+                  WHEN COUNT(*) > 10 THEN 'High Demand'
+                  WHEN COUNT(*) BETWEEN 3 AND 5 THEN 'Moderate Demand'
                   ELSE 'Low Demand'
               END AS status
               FROM request
