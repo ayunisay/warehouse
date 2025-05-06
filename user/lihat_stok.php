@@ -67,7 +67,7 @@ include('../koneksi.php');
                     <tbody class="divide-y divide-gray-200">
                         <?php
                         // Ambil data dari tabel stok_barang
-                        $sql = "SELECT id_barang, nama_barang, jumlah, id_rak, id_kategori FROM stok_barang";
+                        $sql = "SELECT stok_barang.id_barang, stok_barang.nama_barang, stok_barang.jumlah, rak_barang.lokasi, kategori_barang.nama_kategori FROM stok_barang JOIN rak_barang ON stok_barang.id_rak = rak_barang.lokasi JOIN kategori_barang ON stok_barang.id_kategori = kategori_barang.nama_kategori";
                         $result = $conn->query($sql);
                         $no = 1;
 
@@ -77,8 +77,8 @@ include('../koneksi.php');
                                         <td class='py-3 px-4'>" . htmlspecialchars($no++) . "</td>
                                         <td class='py-3 px-4'>" . htmlspecialchars($row['nama_barang']) . "</td>
                                         <td class='py-3 px-4'>" . htmlspecialchars($row['jumlah']) . "</td>
-                                        <td class='py-3 px-4'>" . htmlspecialchars($row['id_rak']) . "</td>
-                                        <td class='py-3 px-4'>" . htmlspecialchars($row['id_kategori']) . "</td>
+                                        <td class='py-3 px-4'>" . htmlspecialchars($row['lokasi']) . "</td>
+                                        <td class='py-3 px-4'>" . htmlspecialchars($row['nama_kategori']) . "</td>
                                     </tr>";
                             }
                         } else {
