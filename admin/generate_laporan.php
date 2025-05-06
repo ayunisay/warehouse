@@ -69,7 +69,7 @@ include('../koneksi.php'); // Pastikan file koneksi sudah ada dan benar
             <h2 class="text-2xl font-bold text-gray-700 mb-4">Laporan Keluar</h2>
             <p class="text-gray-600 mb-4">Ekspor laporan pengambilan barang.</p>
             <form action="/warehouse/admin/laporan/export_transaction_report.php" method="POST">
-                <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700 transition duration-300">Ekspor Laporan Transaksi</button>
+                <button type="submit" class="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700 transition duration-300">Ekspor Laporan Keluar</button>
             </form>
         </div>
 
