@@ -52,7 +52,9 @@ if (isset($_GET['delete'])) {
     $id_kategori = intval($_GET['delete']); // Pastikan parameter adalah angka
 
     // Periksa apakah kategori sedang digunakan di tabel stok_barang
-    $stmt_check_usage = $conn->prepare("SELECT COUNT(*) AS count FROM stok_barang WHERE nama_kategori = (SELECT nama_kategori FROM kategori_barang WHERE id_kategori = ?)");
+    $stmt_check_usage = $conn->prepare("SELECT COUNT(*) AS count FROM stok_barang
+JOIN kategori_barang ON stok_barang.id_kategori = kategori_barang.id_kategori
+WHERE kategori_barang.id_kategori = ?");
     $stmt_check_usage->bind_param("i", $id_kategori);
     $stmt_check_usage->execute();
     $result_check_usage = $stmt_check_usage->get_result();
@@ -98,7 +100,7 @@ $result_kategori = $conn->query($sql_kategori);
     <title>Tambah Kategori</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal min-h-screen flex flex-col">
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
     <!-- Navbar -->
     <nav class="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -141,7 +143,7 @@ $result_kategori = $conn->query($sql_kategori);
         </div>
     </nav>
 
-    <div class="container mx-auto mt-8 flex-grow">
+    <div class="container mx-auto mt-8">
         <div class="bg-white shadow-md rounded-lg p-6 mt-8">
             <h1 class="text-2xl font-bold text-gray-700 mb-4">Tambah Kategori</h1>
             <form method="POST">
@@ -185,14 +187,5 @@ $result_kategori = $conn->query($sql_kategori);
             </table>
         </div>
     </div>
-
-        <!-- Footer -->
-        <footer class="bg-gray-900 text-white w-full pb-5 mt-8">
-        <div class="mt-5 text-center">
-            <p class="text-sm text-gray-500">
-                &copy; <?php echo date('Y'); ?> Warehouse Management System. All rights reserved.
-            </p>
-        </div>
-    </footer>
 </body>
 </html>
