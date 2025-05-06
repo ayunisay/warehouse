@@ -2,7 +2,7 @@
 include('../../koneksi.php'); //koneksi.php
 
 // Ambil data transaksi dari database
-$query = "SELECT id_transaksi, nama_barang, jumlah, tanggal_pinjam, tanggal_kembali, status FROM transaksi";
+$query = "SELECT keluar.id_keluar, stok_barang.id_barang, stok_barang.nama_barang, keluar.tanggal, keluar.jumlah, keluar.keterangan FROM keluar JOIN stok_barang ON keluar.id_barang = stok_barang.id_barang;";
 $result = $conn->query($query);
 
 // Header untuk file CSV
@@ -11,7 +11,7 @@ header('Content-Disposition: attachment; filename=laporan_transaksi.csv');
 
 // Buat file CSV
 $output = fopen('php://output', 'w');
-fputcsv($output, ['ID Transaksi', 'Nama Barang', 'Jumlah', 'Tanggal Pinjam', 'Tanggal Kembali', 'Status']);
+fputcsv($output, ['ID Keluar', 'ID Barang', 'Nama Barang', 'Tanggal', 'Jumlah', 'Keterangan']);
 
 // Catat aktivitas ke tabel audit_trail
 $tanggal = date('Y-m-d');

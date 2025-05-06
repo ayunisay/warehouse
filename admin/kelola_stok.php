@@ -263,7 +263,6 @@ if (isset($_GET['edit'])) {
                                         $usedRak[] = $row['id_rak'];
                                     }
                                 }
-
                                 if ($rakResult && $rakResult->num_rows > 0) {
                                     while ($rak = $rakResult->fetch_assoc()) {
                                         if (!in_array($rak['id_rak'], $usedRak)) {
