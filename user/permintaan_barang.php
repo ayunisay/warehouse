@@ -16,6 +16,9 @@ if (isset($_POST['insert'])) {
     $stmt->bind_param("ssis", $nama_pengaju, $nama_barang, $jumlah, $alasan);
 
     if ($stmt->execute()) {
+         // Dapatkan ID terakhir yang dimasukkan
+        $id_barang = $conn->insert_id;
+        
         // Catat aktivitas ke tabel audit_trail
         $tanggal = date('Y-m-d');
         $waktu = date('H:i:s');

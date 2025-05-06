@@ -304,7 +304,7 @@ if (isset($_GET['edit'])) {
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         <?php
-                            $sql = "SELECT id_barang, nama_barang, id_kategori, jumlah, id_rak FROM stok_barang";
+                            $sql = "SELECT stok_barang.id_barang, stok_barang.nama_barang, kategori_barang.id_kategori, kategori_barang.nama_kategori, stok_barang.jumlah, rak_barang.id_rak, rak_barang.lokasi FROM stok_barang JOIN kategori_barang ON stok_barang.id_kategori = kategori_barang.id_kategori JOIN rak_barang ON stok_barang.id_rak = rak_barang.id_rak";
                             $result = $conn->query($sql);
 
                             $no = 1; // Inisialisasi nomor urut
@@ -314,9 +314,9 @@ if (isset($_GET['edit'])) {
                                     echo "<tr class='hover:bg-gray-50'>
                                             <td class='py-3 px-4'>" . htmlspecialchars($no++) . "</td>
                                             <td class='py-3 px-4'>" . htmlspecialchars($row['nama_barang']) . "</td>
-                                            <td class='py-3 px-4'>" . htmlspecialchars($row['id_kategori']) . "</td>
+                                            <td class='py-3 px-4'>" . htmlspecialchars($row['nama_kategori']) . "</td>
                                             <td class='py-3 px-4'>" . htmlspecialchars($row['jumlah']) . "</td>
-                                            <td class='py-3 px-4'>" . htmlspecialchars($row['id_rak']) . "</td>
+                                            <td class='py-3 px-4'>" . htmlspecialchars($row['lokasi']) . "</td>
                                             <td class='py-3 px-4'>
                                                 <a href='?edit=" . $row['id_barang'] . "' class='text-blue-500 hover:underline'>Edit</a> |
                                                 <a href='?delete=" . $row['id_barang'] . "' onclick=\"return confirm('Yakin ingin menghapus?')\" class='text-red-500 hover:underline'>Hapus</a>

@@ -225,7 +225,7 @@ if (!$resultTrends) {
                     <?php
 
                     // Ambil data dari tabel barang_rusak
-                    $sql = "SELECT id_barang_rsk, nama_barang, jumlah, deskripsi, status, tanggal FROM barang_rusak WHERE status = 'Pending'";
+                    $sql = "SELECT barang_rusak.id_barang_rsk, stok_barang.id_barang, stok_barang.nama_barang, barang_rusak.jumlah, barang_rusak.deskripsi, barang_rusak.status, barang_rusak.tanggal FROM barang_rusak JOIN stok_barang ON barang_rusak.id_barang = stok_barang.id_barang WHERE status = 'Pending'";
                     $result = $conn->query($sql);
 
                     if ($result && $result->num_rows > 0) {
@@ -284,7 +284,7 @@ if (!$resultTrends) {
                     <tbody class="divide-y divide-gray-200">
                         <?php
                         // Ambil data dari tabel request
-                        $sql = "SELECT id_barang_rsk, nama_barang, jumlah, deskripsi, status, tanggal FROM barang_rusak";
+                        $sql = "SELECT barang_rusak.id_barang_rsk, stok_barang.id_barang, stok_barang.nama_barang, barang_rusak.jumlah, barang_rusak.deskripsi, barang_rusak.status, barang_rusak.tanggal FROM barang_rusak JOIN stok_barang ON barang_rusak.id_barang = stok_barang.id_barang ORDER BY barang_rusak.tanggal DESC";
                         $result = $conn->query($sql);
                         $no = 1;
 

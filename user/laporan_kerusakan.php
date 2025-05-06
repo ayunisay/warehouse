@@ -196,7 +196,7 @@ if (isset($_GET['edit'])) {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="id_barang" class="block text-gray-600 font-medium mb-2">Nama Barang</label>
-                        <select id="id_barang" name="id_barang" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                        <select id="id_barang" name="id_barang" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" required>
                             <option value="" disabled selected>Pilih Barang</option>
                             <?php
                             $barangResult = $conn->query("SELECT * FROM stok_barang");
@@ -242,7 +242,7 @@ if (isset($_GET['edit'])) {
                     <tbody class="divide-y divide-gray-200">
                         <?php
                         // Ambil data dari tabel request
-                        $sql = "SELECT id_barang_rsk, nama_barang, jumlah, deskripsi, status, tanggal FROM barang_rusak"; 
+                        $sql = "SELECT barang_rusak.id_barang_rsk, stok_barang.id_barang, stok_barang.nama_barang, barang_rusak.jumlah, barang_rusak.deskripsi, barang_rusak.status, barang_rusak.tanggal FROM barang_rusak JOIN stok_barang ON barang_rusak.id_barang = stok_barang.id_barang ORDER BY barang_rusak.tanggal DESC"; 
                         $result = $conn->query($sql);
                         $no = 1;
 

@@ -16,7 +16,7 @@ if (isset($_POST['insert'])) {
     $password = $_POST['password'];
     $role = $_POST['role'];
 
-    $stmt = $conn->prepare("INSERT INTO user (username, password, role) VALUES (?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
     $stmt->bind_param("sss", $username, $password, $role);
     
     // Update user password in DB
@@ -51,7 +51,7 @@ if (isset($_POST['update'])) {
     $password = $_POST['password'];
     $role = $_POST['role'];
 
-    $stmt = $conn->prepare("UPDATE user SET username=?, password=?, role=? WHERE id=?");
+    $stmt = $conn->prepare("UPDATE users SET username=?, password=?, role=? WHERE id=?");
     $stmt->bind_param("sssi", $username, $password, $role, $id);
 
     if ($stmt->execute()) {
@@ -77,7 +77,7 @@ if (isset($_POST['update'])) {
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
     
-    $stmt = $conn->prepare("DELETE FROM user WHERE id=?");
+    $stmt = $conn->prepare("DELETE FROM users WHERE id=?");
     $stmt->bind_param("i", $id);
     
     if ($stmt->execute()) {
@@ -105,7 +105,7 @@ $edit_data = null;
 // Melakukan Get Data
 if (isset($_GET['edit'])) {
     $id = $_GET['edit'];
-    $result = $conn->query("SELECT * FROM user WHERE id=$id");
+    $result = $conn->query("SELECT * FROM users WHERE id=$id");
 
     if ($result && $result->num_rows > 0) {
         $edit_data = $result->fetch_assoc();
@@ -191,6 +191,7 @@ if (isset($_GET['edit'])) {
                     <div>
                         <label for="role" class="block text-gray-600 font-medium mb-2">Role</label>
                         <select id="role" name="role" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                            <option value="" disabled selected>Pilih Role</option>
                             <option value="user" <?php echo ($edit_data && $edit_data['role'] === 'user') ? 'selected' : ''; ?>>User</option>
                             <option value="admin" <?php echo ($edit_data && $edit_data['role'] === 'admin') ? 'selected' : ''; ?>>Admin</option>
                         </select>

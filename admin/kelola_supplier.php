@@ -11,7 +11,7 @@ if (isset($_POST['insert'])) {
     $alamat = $_POST['alamat'];
 
     $stmt = $conn->prepare("INSERT INTO supplier (nama_supp, kontak, alamat) VALUES (?, ?, ?)");
-    $stmt->bind_param("sis", $nama_supp, $kontak, $alamat);
+    $stmt->bind_param("sss", $nama_supp, $kontak, $alamat);
 
     if ($stmt->execute()) {
         // Catat aktivitas ke tabel audit_trail
@@ -43,7 +43,7 @@ if (isset($_POST['update'])) {
     $alamat = $_POST['alamat'];
 
     $stmt = $conn->prepare("UPDATE supplier SET nama_supp=?, kontak=?, alamat=? WHERE id_supp=?");
-    $stmt->bind_param("sisi", $nama_supp, $kontak, $alamat, $id_supp);
+    $stmt->bind_param("sssi", $nama_supp, $kontak, $alamat, $id_supp);
 
     if ($stmt->execute()) {
         // Catat aktivitas ke tabel audit_trail
