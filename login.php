@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[url(bg.jpeg)] bg-no-repeat bg-cover bg-center h-screen font-sans leading-normal tracking-normal">
+<body class="bg-[url(./img/2.jpg)] bg-no-repeat bg-cover bg-center h-screen font-sans leading-normal tracking-normal">
     <?php if (!empty($error)) : ?>
         <div id="toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg animate-slide-down flex items-center gap-2">
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <?php endif; ?>
 
     <div class="flex items-center justify-center min-h-screen">
-        <div class="w-full max-w-md bg-white shadow-md rounded-lg p-6">
+        <div class="w-full max-w-md bg-white shadow-md rounded-2xl p-6 shadow-[0_10px_40px_rgba(0,0,0,0.3)]">
             <h1 class="text-2xl font-bold text-gray-700 mb-4 text-center">Login</h1>
             <form method="POST">
             <div class="mb-4">
