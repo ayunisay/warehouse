@@ -218,7 +218,7 @@ if (isset($_GET['edit'])) {
                 </div>
                 <div class="mt-4">
                     <label for="deskripsi" class="block text-gray-600 font-medium mb-2">Deskripsi Kerusakan</label>
-                    <textarea id="deskripsi" name="deskripsi" rows="4" class="w-full py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Jelaskan kerusakan atau kehilangan barang" required>  <?php echo $edit_data ? htmlspecialchars($edit_data['deskripsi']) : ''; ?></textarea>
+                    <textarea id="deskripsi" name="deskripsi" rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Jelaskan kerusakan atau kehilangan barang" required><?php echo $edit_data ? htmlspecialchars($edit_data['deskripsi']) : ''; ?></textarea>
                 </div>
                 <button type="submit" name="insert" class="mt-4 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition duration-300">Kirim Laporan</button>
             </form>

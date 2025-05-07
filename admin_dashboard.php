@@ -1,9 +1,10 @@
 <?php
-session_start();
 include('koneksi.php'); 
+include 'auth_check.php';
 
-if (!isset($_SESSION['id']) || $_SESSION['role'] !== 'admin') {
-    header('Location: login.php'); // atau redirect ke halaman error/403
+// Pastikan hanya admin yang bisa masuk
+if ($_SESSION['role'] !== 'admin') {
+    header("Location: login.php");
     exit();
 }
 

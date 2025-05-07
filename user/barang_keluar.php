@@ -195,7 +195,7 @@ if (isset($_GET['edit'])) {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="id_barang" class="block text-gray-600 font-medium mb-2">Nama Barang</label>
-                        <select id="id_barang" name="id_barang" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                        <select id="nama_barang" name="id_barang" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
                             <option value="" disabled selected>Pilih Barang</option>
                             <?php
                             $barangResult = $conn->query("SELECT * FROM stok_barang");
@@ -212,7 +212,7 @@ if (isset($_GET['edit'])) {
                     </div>
                     <div>
                         <label for="id_kategori" class="block text-gray-600 font-medium mb-2">Kategori</label>
-                        <select id="id_kategori" name="id_kategori" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                        <select id="nama_kategori" name="nama_kategori" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
                             <option value="" disabled selected>Pilih kategori</option>
                             <?php
                             $kategoriResult = $conn->query("SELECT kategori_barang.*, stok_barang.* FROM stok_barang JOIN kategori_barang ON stok_barang.id_kategori = kategori_barang.id_kategori");
@@ -233,7 +233,7 @@ if (isset($_GET['edit'])) {
                     </div>
                     <div>
                         <label for="id_rak" class="block text-gray-600 font-medium mb-2">Lokasi Penyimpanan</label>
-                        <select id="id_rak" name="id_rak" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                        <select id="lokasi" name="lokasi" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
                             <option value="" disabled selected>Pilih lokasi</option>
                             <?php
                             $rakResult = $conn->query("SELECT rak_barang.*, stok_barang.* FROM stok_barang JOIN rak_barang ON stok_barang.id_rak = rak_barang.id_rak");
@@ -251,7 +251,7 @@ if (isset($_GET['edit'])) {
                 </div>
                 <div class="mt-4">
                     <label for="keterangan" class="block text-gray-600 font-medium mb-2">Keterangan Barang Keluar</label>
-                    <textarea id="keterangan" name="keterangan" rows="4" class="w-full px-1 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-left" placeholder="Masukkan keterangan" required><?php echo $edit_data ? htmlspecialchars($edit_data['keterangan']) : ''; ?></textarea>
+                    <textarea id="keterangan" name="keterangan" rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-left" placeholder="Masukkan keterangan" required><?php echo $edit_data ? htmlspecialchars($edit_data['keterangan']) : ''; ?></textarea>
                 </div>
                 <button type="submit" name="<?php echo $edit_data ? 'update' : 'insert'; ?>" class="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition duration-300">
                     <?php echo $edit_data ? "Edit Barang Keluar" : "Tambah Barang Keluar"; ?>
@@ -318,6 +318,23 @@ if (isset($_GET['edit'])) {
             </p>
         </div>
     </footer>
+
+    <script>
+        document.getElementById("id_barang").addEventListener("change", function () {
+            const idBarang = this.value;
+
+            fetch(`get_barang_info.php?id_barang=${idBarang}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data) {
+                        document.getElementById("id_kategori").value = data.id_kategori;
+                        document.getElementById("lokasi").value = data.nama_lokasi;
+                    }
+                })
+                .catch(error => console.error('Gagal mengambil data barang:', error));
+        });
+    </script>
+
 
 </body>
 </html>

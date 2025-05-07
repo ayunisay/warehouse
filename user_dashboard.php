@@ -1,6 +1,12 @@
 <?php
-session_start();
 include('koneksi.php'); 
+include 'auth_check.php';
+
+// Pastikan hanya user yang bisa masuk
+if ($_SESSION['role'] !== 'user') {
+    header("Location: login.php");
+    exit();
+}
 
 // Total Items
 $queryTotalItems = "SELECT COUNT(*) AS total_items FROM stok_barang";
